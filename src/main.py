@@ -6,16 +6,20 @@ import torch
 import numpy as np
 from typing import List
 from PIL import Image
-
+import requests
+import os
+from tqdm import tqdm
 class ReCaptchaBreaker:
 
     def print(self, *args, **kwargs):
         if self.verbose: print(*args, **kwargs)
 
-    def __init__(self, driver, verbose = False):
+
+    def __init__(self, driver = None, verbose = False):
         self.driver = driver
         self.verbose = verbose
-        self.model, self.feature_extractor = get_model() 
+        self.package_path = os.path.dirname(os.path.abspath(__file__))
+        self.load_model()
 
     def get_captcha_box(self, driver = None):
         if driver is None: driver = self.driver
@@ -181,3 +185,29 @@ class ReCaptchaBreaker:
             if self.__check_solve__(driver, verify_btn): return True
 
         return False
+
+
+    def download_model(self,):
+        link = 'https://github.com/Hackear2041/ReCaptchaBreaker/raw/main/src/model.bin'
+        self.print('Downloading Model')
+        # Beautiful downloader with progress bar
+
+        r = requests.get(link, stream=True)
+        total_size = int(r.headers.get('content-length', 0))
+        block_size = 1024
+        t=tqdm(total=total_size, unit='iB', unit_scale=True)
+        with open(os.path.join(self.package_path, 'model.bin'), 'wb') as f:
+            for data in r.iter_content(block_size):
+                t.update(len(data))
+                f.write(data)
+        t.close()
+        if total_size != 0 and t.n != total_size:
+            self.print('ERROR, something went wrong')
+        self.print('Model Downloaded')
+
+
+    def load_model(self, ):
+        print(os.path.join(self.package_path, 'model.bin'))
+        if not os.path.exists(os.path.join(self.package_path, 'model.bin')):
+            self.download_model()
+        self.model, self.feature_extractor = get_model() 

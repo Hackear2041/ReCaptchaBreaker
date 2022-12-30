@@ -1,13 +1,15 @@
-from transformers import AutoModel, AutoProcessor
+from transformers import AutoModel, AutoProcessor, AutoConfig
 import torch
 import torch.nn as nn
 from PIL import Image
 import numpy as np
+import os
 
 from .utils import download_image, get_borders
 from .constants import label_texts, flex_thresh, NUM_LABELS
 
 from typing import Tuple, List
+
 
 
 class CustomModel(torch.nn.Module):
@@ -33,16 +35,27 @@ class CustomModel(torch.nn.Module):
 
 def get_model() -> Tuple[AutoModel, AutoProcessor]:
     # TODO: Load directly from checkpoint
-    model = AutoModel.from_pretrained("openai/clip-vit-base-patch32")
+    config = AutoConfig.from_pretrained("openai/clip-vit-base-patch32")
+    model = AutoModel.from_config(config)
     feature_extractor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
     model = CustomModel(model)
-    model.load_state_dict(torch.load('src/model.bin', map_location = 'cpu'))
+    model.load_state_dict(torch.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'model.bin'), map_location = 'cpu'))
     return model, feature_extractor
 
-def predict_images(images : List[Image.Image], model, feature_extractor) -> torch.tensor:
+def predict_images(images : List[Image.Image], model, feature_extractor, returnDict = False
+) -> torch.tensor:
     images = torch.tensor(np.array(feature_extractor(images = images).pixel_values))
-    return model(images = images)[0]
+    outs =  model(images = images)[0]
+
+    if returnDict:
+        # Returns a list of dictionary based on lbael_texts
+        outs = outs.detach().numpy()
+        outs = [dict(zip(label_texts, out)) for out in outs]
+        return outs
+    else:
+        return outs
+
 
 def predict_squares(model, feature_extractor, url, grid_size, label, min_preds = 3, border = 0.1, returnImages = False):
     l = int(grid_size**0.5)

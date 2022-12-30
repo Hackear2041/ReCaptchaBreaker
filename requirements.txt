@@ -1,4 +1,4 @@
 torch
 numpy 
 transformers
-src/ckpt
+tqdm
