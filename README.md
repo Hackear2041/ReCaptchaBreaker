@@ -59,16 +59,20 @@ Any device with python support and atleast 1GB RAM and 500MB free space should b
 
 I train [Clip](https://huggingface.co/docs/transformers/model_doc/clip) model for classification and [Diffusion](https://huggingface.co/docs/diffusers/index) models for synthetic dataset generation. Further, using an iterative procedure, new annotated data points are collected by applying a week classifier to a real recaptcha system. The classifier model is further trained on the collected and augmented dataset resulting in a better classifier. The method is easily extendible to other forms of image captcha tasks such as hCaptcha. 
 
-<!-- ## Citing
+## Citing
 
 If you find this repo useful, please consider citing the following paper:
 
 ```bibtex
-@misc{hac2022recaptchabreaker,
-      title={ReCaptchaBreaker: Breaking Google's Recaptcha Image Challenge with near human performance},
-        year={2022},
-      }
-``` -->
+@software{Anonymous_ReCaptchaBreaker_Breaking_Google_s_2022,
+	author = {Anonymous},
+	month = {12},
+	title = {{ReCaptchaBreaker: Breaking Google's Recaptcha Image Challenge with near human performance}},
+	url = {https://github.com/Hackear2041/ReCaptchaBreaker},
+	version = {1.0.0},
+	year = {2022}
+}
+``` 
 
 ## Disclaimer⚠️
  This repo is for educational and research purposes only. Any actions and/or activities related to the material contained on this repo is solely your responsibility. The misuse of the information in this repo can result in criminal charges brought against the persons in question. The author will not be held responsible in the event any criminal charges be brought against any individuals misusing the information in this repo to break the law. However, if you think this repo violates any of your terms of usage or policies, feel free to contact me.
